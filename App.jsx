@@ -64,14 +64,23 @@ const TOKENS = `
 .hmz :focus-visible{outline:2px solid hsl(var(--ring));outline-offset:3px;border-radius:4px;}
 
 .hmz .card{background:hsl(var(--card));color:hsl(var(--card-foreground));border:1px solid hsl(var(--border));
-  border-radius:var(--radius);transition:transform .24s ease,border-color .24s ease,box-shadow .24s ease;}
-.hmz .card-hover:hover{transform:translateY(-5px);border-color:hsl(var(--accent)/.5);
-  box-shadow:0 18px 40px -24px hsl(var(--stone)/.55);}
-.hmz .section{padding-top:5.5rem;padding-bottom:5.5rem;}
+  border-radius:var(--radius);transition:transform .3s cubic-bezier(.2,.7,.2,1),border-color .3s ease,box-shadow .3s ease;}
+.hmz .card-hover{cursor:default;}
+.hmz .card-hover:hover{transform:translateY(-6px);border-color:hsl(var(--accent)/.55);
+  box-shadow:0 22px 48px -26px hsl(var(--stone)/.6);}
+.hmz .section{padding-top:3.5rem;padding-bottom:3.5rem;}
+@media(min-width:640px){.hmz .section{padding-top:4.75rem;padding-bottom:4.75rem;}}
+@media(min-width:960px){.hmz .section{padding-top:6rem;padding-bottom:6rem;}}
 .hmz .soft-bg{background:hsl(var(--muted)/.5);}
 .hmz .pill{display:inline-flex;align-items:center;gap:.45rem;background:hsl(var(--card));
-  border:1px solid hsl(var(--border));border-radius:999px;padding:.35rem .85rem;font-size:.72rem;
+  border:1px solid hsl(var(--border));border-radius:999px;padding:.4rem .9rem;font-size:.7rem;
   text-transform:uppercase;letter-spacing:.16em;font-weight:600;color:hsl(var(--muted-foreground));}
+
+/* snappy image tile: image sits in a clipped frame and zooms on hover */
+.hmz .imgframe{overflow:hidden;background:hsl(var(--muted));position:relative;}
+.hmz .imgframe img{width:100%;height:100%;object-fit:cover;display:block;
+  transition:transform .6s cubic-bezier(.2,.7,.2,1);}
+.hmz .card-hover:hover .imgframe img,.hmz .ig-tile:hover img{transform:scale(1.07);}
 
 /* tactile tear seam */
 .hmz .seam{display:block;height:14px;background-image:radial-gradient(circle at center,hsl(var(--accent)) 0 2px,transparent 2.5px);
@@ -89,10 +98,23 @@ const TOKENS = `
 .hmz .h-c{animation:riseIn .8s cubic-bezier(.2,.7,.2,1) .2s both;}
 .hmz .h-d{animation:riseIn .8s cubic-bezier(.2,.7,.2,1) .3s both;}
 
+/* mobile-first refinements: tighter type, comfortable tap targets, no overflow */
+.hmz img{max-width:100%;}
+.hmz .btn{min-height:44px;}
+@media(max-width:600px){
+  .hmz .display{letter-spacing:-.01em;}
+  .hmz .btn{width:100%;justify-content:center;}
+  .hmz .btn-row-mobile{flex-direction:column;width:100%;}
+}
+@media(max-width:400px){
+  .hmz .wrap{padding-left:1rem;padding-right:1rem;}
+}
+
 @media(prefers-reduced-motion:reduce){
   .hmz *{animation:none!important;}
   .hmz .reveal{opacity:1!important;transform:none!important;transition:none!important;}
   .hmz .btn:hover,.hmz .card-hover:hover{transform:none;}
+  .hmz .imgframe img{transition:none!important;}
 }
 `;
 
@@ -234,7 +256,7 @@ function Hero() {
             Built-in length options. One garment. No scissors, no tailor. Patented and patent-pending tear-away hem technology designed for individuals and organisations across every industry.
           </p>
           <p className="h-c" style={{ color: "hsl(var(--muted-foreground))", marginBottom: "2rem", fontWeight: 500 }}>Because fit shouldn't take weeks.</p>
-          <div className="h-d" style={{ display: "flex", gap: ".9rem", flexWrap: "wrap" }}>
+          <div className="h-d btn-row-mobile" style={{ display: "flex", gap: ".9rem", flexWrap: "wrap" }}>
             <button className="btn btn-rust" onClick={() => document.getElementById("partners")?.scrollIntoView({ behavior: "smooth" })}>Become a Brand Partner <ArrowRight className="arw" size={16} /></button>
             <button className="btn btn-outline" disabled title="Coming soon">Ask Hemmy <ArrowRight className="arw" size={16} /></button>
           </div>
@@ -328,11 +350,8 @@ function Products() {
         <div style={{ display: "grid", gap: "1.5rem", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))" }}>
           {PRODUCTS.map((p, i) => (
             <Reveal key={p.t} delay={i * 110} className="card card-hover" as="div" style={{ overflow: "hidden", display: "flex", flexDirection: "column" }}>
-              <div style={{ aspectRatio: "16/11", background: "hsl(var(--muted))", overflow: "hidden" }}>
-                <img src={p.img} alt={p.t} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover", transition: "transform .5s ease" }}
-                  onError={(e) => { e.currentTarget.style.opacity = ".25"; }}
-                  onMouseOver={(e) => { e.currentTarget.style.transform = "scale(1.05)"; }}
-                  onMouseOut={(e) => { e.currentTarget.style.transform = "scale(1)"; }} />
+              <div className="imgframe" style={{ aspectRatio: "16/11" }}>
+                <img src={p.img} alt={p.t} loading="lazy" onError={(e) => { e.currentTarget.style.opacity = ".25"; }} />
               </div>
               <div style={{ padding: "1.6rem 1.6rem 1.9rem" }}>
                 <h3 className="display" style={{ fontSize: "1.3rem", margin: "0 0 .6rem" }}>{p.t}</h3>
@@ -504,13 +523,24 @@ function Testimonials() {
 
 /* --------------------------- instagram ----------------------------- */
 
+const ELFSIGHT_APP_ID = "4fe7d98b-ddbd-45c4-9b1a-4ecb9412d62a";
+
 function InstagramFeed() {
-  const posts = [
-    "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=400&q=80",
-    "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=400&q=80",
-  ];
+  // Load the Elfsight platform script once. It scans the page for
+  // .elfsight-app-{id} containers and renders the live feed into them.
+  useEffect(() => {
+    const SRC = "https://static.elfsight.com/platform/platform.js";
+    if (!document.querySelector(`script[src="${SRC}"]`)) {
+      const s = document.createElement("script");
+      s.src = SRC;
+      s.async = true;
+      document.body.appendChild(s);
+    } else if (window.eapps && typeof window.eapps.initWidgetsFromBuffer === "function") {
+      // Script already present (e.g. client-side nav back to this page): re-scan.
+      window.eapps.initWidgetsFromBuffer();
+    }
+  }, []);
+
   return (
     <section className="section">
       <div className="wrap">
@@ -525,22 +555,13 @@ function InstagramFeed() {
             <Instagram size={15} /> Follow on Instagram <ArrowRight className="arw" size={15} />
           </a>
         </Reveal>
-        <div style={{ display: "grid", gap: "1rem", gridTemplateColumns: "repeat(auto-fit,minmax(180px,1fr))" }}>
-          {posts.map((src, i) => (
-            <Reveal key={i} delay={i * 80} as="a" className="ig-tile"
-              href="https://www.instagram.com/hmz.hemming/" target="_blank" rel="noreferrer"
-              style={{ aspectRatio: "1", borderRadius: "var(--radius)", overflow: "hidden", background: "hsl(var(--muted))", position: "relative", display: "block" }}>
-              <img src={src} alt="HMZ Instagram post" loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                onError={(e) => { e.currentTarget.style.opacity = ".3"; }} />
-            </Reveal>
-          ))}
-        </div>
-        <p className="pill" style={{ margin: "1.5rem auto 0", width: "fit-content" }}>
-          <Instagram size={12} /> Free Instagram Feed Widget
-        </p>
-        {/* Elfsight app id: 4fe7d98b-ddbd-45c4-9b1a-4ecb9412d62a */}
+
+        <Reveal>
+          {/* Live Elfsight Instagram feed renders here once the account is
+              connected in the Elfsight dashboard for this app id. */}
+          <div className={`elfsight-app-${ELFSIGHT_APP_ID}`} data-elfsight-app-lazy />
+        </Reveal>
       </div>
-      <style>{`.hmz .ig-tile img{transition:transform .5s ease;}.hmz .ig-tile:hover img{transform:scale(1.06);}`}</style>
     </section>
   );
 }

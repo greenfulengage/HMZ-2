@@ -59,20 +59,20 @@ const TOKENS = `
 @media(min-width:768px){.hmz .wrap{padding-left:2.5rem;padding-right:2.5rem;}}
 .hmz a{color:inherit;text-decoration:none;}
 .hmz .accent{color:hsl(var(--accent));}
-.hmz .lede{font-size:1.075rem;color:hsl(var(--muted-foreground));}
+.hmz .lede{font-size:1.1rem;color:hsl(var(--muted-foreground));line-height:1.7;}
 
-/* section rhythm */
-.hmz .section{padding-top:4rem;padding-bottom:4rem;}
-@media(min-width:768px){.hmz .section{padding-top:6rem;padding-bottom:6rem;}}
-@media(min-width:1100px){.hmz .section{padding-top:7rem;padding-bottom:7rem;}}
-.hmz .soft-bg{background:hsl(var(--muted)/.6);}
+/* section rhythm: more air between sections for a calm, editorial flow */
+.hmz .section{padding-top:4.5rem;padding-bottom:4.5rem;}
+@media(min-width:768px){.hmz .section{padding-top:7rem;padding-bottom:7rem;}}
+@media(min-width:1100px){.hmz .section{padding-top:9rem;padding-bottom:9rem;}}
+.hmz .soft-bg{background:hsl(var(--muted)/.6);border-top:1px solid hsl(var(--border)/.6);border-bottom:1px solid hsl(var(--border)/.6);}
 .hmz .hair{border:0;border-top:1px solid hsl(var(--border));margin:0;}
 
 /* shared section header block */
-.hmz .shead{max-width:44rem;margin-bottom:2.75rem;}
-.hmz .shead .eyebrow{margin-bottom:.9rem;}
-.hmz .shead h2{font-size:clamp(2rem,4.5vw,3.25rem);}
-.hmz .shead p{margin-top:1rem;}
+.hmz .shead{max-width:46rem;margin-bottom:3.5rem;}
+.hmz .shead .eyebrow{margin-bottom:1.1rem;}
+.hmz .shead h2{font-size:clamp(2.15rem,5vw,3.6rem);}
+.hmz .shead p{margin-top:1.25rem;}
 
 /* buttons */
 .hmz .btn{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
@@ -148,14 +148,14 @@ const TOKENS = `
 .hmz .tearwrap .scis{opacity:0;transform:translateX(-6px);transition:opacity .35s ease,transform .35s ease;color:hsl(var(--accent));}
 .hmz .tearwrap:hover .scis{opacity:1;transform:translateX(0);}
 
-/* reveal */
-.hmz .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1);}
+/* reveal: gentle, calm fade-and-rise */
+.hmz .reveal{opacity:0;transform:translateY(18px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1);}
 .hmz .reveal.in{opacity:1;transform:none;}
-@keyframes riseIn{from{opacity:0;transform:translateY(28px)}to{opacity:1;transform:none}}
-.hmz .h-a{animation:riseIn .85s cubic-bezier(.2,.7,.2,1) both;}
-.hmz .h-b{animation:riseIn .85s cubic-bezier(.2,.7,.2,1) .1s both;}
-.hmz .h-c{animation:riseIn .85s cubic-bezier(.2,.7,.2,1) .2s both;}
-.hmz .h-d{animation:riseIn .85s cubic-bezier(.2,.7,.2,1) .3s both;}
+@keyframes riseIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.hmz .h-a{animation:riseIn 1s cubic-bezier(.16,1,.3,1) both;}
+.hmz .h-b{animation:riseIn 1s cubic-bezier(.16,1,.3,1) .12s both;}
+.hmz .h-c{animation:riseIn 1s cubic-bezier(.16,1,.3,1) .24s both;}
+.hmz .h-d{animation:riseIn 1s cubic-bezier(.16,1,.3,1) .36s both;}
 
 /* responsive helpers */
 .hmz .grid2{display:grid;gap:2.5rem;grid-template-columns:1fr;align-items:center;}
@@ -414,11 +414,15 @@ function Individuals() {
   return (
     <section className="section">
       <div className="wrap">
-        <SectionHead eyebrow="Real-World Proof" title={<>Built For <span className="accent">Individuals</span></>} />
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "1.1rem 3rem" }}>
+        <SectionHead eyebrow="Real-World Proof" title={<>Built For <span className="accent">Individuals</span></>}
+          lede="Whatever the height, whatever the shift, HMZ meets the wearer where they are." />
+        <div style={{ display: "grid", gap: "2.5rem 3rem", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))" }}>
           {INDIVIDUAL.map((i, idx) => (
-            <Reveal key={i} delay={idx * 80} className="tick">
-              <span className="d" /> {i}
+            <Reveal key={i} delay={idx * 110} style={{ borderTop: "2px solid hsl(var(--border))", paddingTop: "1.25rem" }}>
+              <div className="slab accent" style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: ".6rem" }}>
+                {String(idx + 1).padStart(2, "0")}
+              </div>
+              <div className="display" style={{ fontSize: "1.35rem" }}>{i}</div>
             </Reveal>
           ))}
         </div>
